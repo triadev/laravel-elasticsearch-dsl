@@ -1,0 +1,19 @@
+version: '2.2'
+services:
+  laravel-elasticsearch-dsl:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.4.0
+    container_name: laravel-elasticsearch-dsl
+    environment:
+      - cluster.name=test-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms1024m -Xmx1024m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 9222:9200
+
+networks:
+  default:
+    driver: bridge
