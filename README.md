@@ -5,6 +5,8 @@ A service provider for laravel with a fluent elasticsearch query and aggregation
 
 [![Software license][ico-license]](LICENSE)
 [![Travis][ico-travis]][link-travis]
+[![Coveralls](https://coveralls.io/repos/github/triadev/laravel-elasticsearch-dsl/badge.svg?branch=master)](https://coveralls.io/github/triadev/laravel-elasticsearch-dsl?branch=master)
+[![CodeCov](https://codecov.io/gh/triadev/laravel-elasticsearch-dsl/branch/master/graph/badge.svg)](https://codecov.io/gh/triadev/laravel-elasticsearch-dsl)
 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/triadev/laravel-elasticsearch-dsl/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/triadev/laravel-elasticsearch-dsl/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/triadev/laravel-elasticsearch-dsl/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/triadev/laravel-elasticsearch-dsl/?branch=master)
