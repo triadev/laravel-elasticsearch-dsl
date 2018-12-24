@@ -1,0 +1,43 @@
+language: php
+
+sudo: true
+
+php:
+  - 7.1
+  - 7.2
+
+env:
+  global:
+    - "ELASTICSEARCH_HOSTS=http://127.0.0.1:9200"
+  matrix:
+    - "ES_VERSION=6.0.0 ES_DOWNLOAD_URL=https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.0.0.deb"
+    - "ES_VERSION=6.1.0 ES_DOWNLOAD_URL=https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.1.0.deb"
+    - "ES_VERSION=6.2.0 ES_DOWNLOAD_URL=https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.2.0.deb"
+    - "ES_VERSION=6.3.0 ES_DOWNLOAD_URL=https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.3.0.deb"
+    - "ES_VERSION=6.4.0 ES_DOWNLOAD_URL=https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.4.0.deb"
+
+before_install:
+  - curl $ES_DOWNLOAD_URL > elasticsearch_package.deb
+  - sudo dpkg -i --force-confnew elasticsearch_package.deb
+  - sudo service elasticsearch restart
+  - sleep 15
+  - curl http://localhost:9200
+
+install:
+  - travis_retry composer install --no-interaction --no-suggest
+  - wget -c -nc --retry-connrefused --tries=0 https://github.com/php-coveralls/php-coveralls/releases/download/v2.0.0/php-coveralls.phar -O coveralls.phar
+  - chmod +x coveralls.phar
+  - php coveralls.phar --version
+
+script:
+  - ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+  - ./vendor/bin/phpcs --standard=PSR2 src --ignore=src/Model/*
+
+after_success:
+  - travis_retry php coveralls.phar -v
+  - bash <(curl -s https://codecov.io/bash)
+
+cache:
+  directories:
+    - vendor
+    - $HOME/.cache/composer
