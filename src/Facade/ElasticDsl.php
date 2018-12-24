@@ -13,7 +13,7 @@ use Triadev\Es\Dsl\Dsl\Suggestion;
  * @package Triadev\Es\Dsl\Facade
  *
  * @method static Client getEsClient()
- * @method static Search search(?OngrSearch $search = null)
+ * @method static Search search(?OngrSearch $search = null, ?string $esIndex = null, ?string $esType = null)
  * @method static Suggestion suggest(?OngrSearch $search = null)
  */
 class ElasticDsl extends Facade

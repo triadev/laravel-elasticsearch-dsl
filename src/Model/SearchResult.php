@@ -1,5 +1,5 @@
 <?php
-namespace Triadev\Es\Dsl\Dsl;
+namespace Triadev\Es\Dsl\Model;
 
 use Illuminate\Support\Collection;
 

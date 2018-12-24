@@ -3,6 +3,13 @@ namespace Triadev\Es\Dsl\Dsl;
 
 use ONGR\ElasticsearchDSL\BuilderInterface;
 use ONGR\ElasticsearchDSL\Search as OngrSearch;
+use Triadev\Es\Dsl\Dsl\Query\Compound;
+use Triadev\Es\Dsl\Dsl\Query\Fulltext;
+use Triadev\Es\Dsl\Dsl\Query\Geo;
+use Triadev\Es\Dsl\Dsl\Query\InnerHit;
+use Triadev\Es\Dsl\Dsl\Query\Joining;
+use Triadev\Es\Dsl\Dsl\Query\Specialized;
+use Triadev\Es\Dsl\Dsl\Query\TermLevel;
 
 abstract class AbstractSearch
 {
@@ -18,17 +25,25 @@ abstract class AbstractSearch
     /**
      * AbstractDsl constructor.
      * @param OngrSearch|null $search
+     * @param string|null $esIndex
+     * @param string|null $esType
      */
-    public function __construct(?OngrSearch $search = null)
-    {
+    public function __construct(
+        ?OngrSearch $search = null,
+        ?string $esIndex = null,
+        ?string $esType = null
+    ) {
         $this->search = $search ?: new OngrSearch();
+        
+        $this->esIndex = $esIndex;
+        $this->esType = $esType;
     }
     
     /**
      * Overwrite the default elasticsearch index
      *
      * @param string $index
-     * @return AbstractSearch
+     * @return AbstractDsl|Search|TermLevel|Compound|Fulltext|Geo|InnerHit|Joining|Specialized
      */
     public function esIndex(string $index) : AbstractSearch
     {
@@ -50,7 +65,7 @@ abstract class AbstractSearch
      * Overwrite the default elasticsearch type
      *
      * @param string $type
-     * @return AbstractSearch
+     * @return AbstractDsl|Search|TermLevel|Compound|Fulltext|Geo|InnerHit|Joining|Specialized
      */
     public function esType(string $type) : AbstractSearch
     {
