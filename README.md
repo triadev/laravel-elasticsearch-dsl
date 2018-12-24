@@ -42,6 +42,12 @@ php artisan vendor:publish --provider="Triadev\Es\Dsl\Provider\ServiceProvider" 
 
 This will create a file ```config/laravel-elasticsearch-dsl.php```.
 
+## Main features
+
+- Query (TermLevel, Fulltext, Geo, Compound, Joining, Specialized, InnerHit)
+- Aggregation (Bucketing, Metric, Pipeline)
+- Suggestion
+
 ## Usage
 
 Dieses Paket bietet eine DSL für Elasticsearch.
@@ -62,7 +68,7 @@ Illuminate\Support\Collection: collection of searchable eloquent models
 $result->hits();
 ```
 
-## Bool
+### Bool
 Bei jeder Abfrage, die auf Bool basiert, kann der Bool-Status verändert werden.
 >Default bool state: must
 ```php
@@ -78,7 +84,7 @@ ElasticDsl::search()->termLevel()
 })->get()
 ```
 
-### Nested bool query
+#### Nested bool query
 Eine verschachtelte Query wird über ```bool(\Closure $closure)``` realisiert.
 ```php
 ElasticDsl::search()
@@ -127,25 +133,25 @@ ElasticDsl::search()
 ]
 ```
 
-## TermLevel
+### TermLevel
 >matchAll, exists, fuzzy, ids, prefix, range, regexp, term, terms, type, wildcard
 ```php
 ElasticDsl::search()->termLevel()->filter()->term('FIELD', 'VALUE')->get();
 ```
 
-## Fulltext
+### Fulltext
 >match, matchPhrase, matchPhrasePrefix, multiMatch, queryString, simpleQueryString, commonTerms
 ```php
 ElasticDsl::search()->fulltext()->must()->match('FIELD', 'QUERY')->get();
 ```
 
-## Geo
+### Geo
 >geoBoundingBox, geoDistance, geoPolygon, geoShape
 ```php
 ElasticDsl::search()->geo()->filter()->geoDistance('FIELD','10km', new Location(1, 2))->get();
 ```
 
-## Compound
+### Compound
 >functionScore, constantScore, boosting, disMax
 ```php
 ElasticDsl::search()->compound()->functionScore(
@@ -158,7 +164,7 @@ ElasticDsl::search()->compound()->functionScore(
 )->get();
 ```
 
-## Joining
+### Joining
 >nested, hasChild, hasParent
 ```php
 ElasticDsl::search()->joining()->nested('PATH', function (Search $search) {
@@ -166,13 +172,13 @@ ElasticDsl::search()->joining()->nested('PATH', function (Search $search) {
 })->get();
 ```
 
-## Specialized
+### Specialized
 >moreLikeThis
 ```php
 ElasticDsl::search()->specialized()->moreLikeThis('LIKE')->toDsl();
 ```
 
-## InnerHit
+### InnerHit
 >nestedInnerHit, parentInnerHit
 ```php
 ElasticDsl::search()->nestedInnerHit('NAME', 'PATH', function (Search $search) {
@@ -180,7 +186,7 @@ ElasticDsl::search()->nestedInnerHit('NAME', 'PATH', function (Search $search) {
 })->get();
 ```
 
-### Individual index and type
+#### Individual index and type
 To set an individual index or type per query you have two overwrite methods.
 ```php
 ElasticDsl::search()
@@ -191,7 +197,7 @@ ElasticDsl::search()
     ->get();
 ```
 
-## Aggregation
+### Aggregation
 > Bucketing, Metric, Pipeline
 ```php
 ElasticDsl::search()->aggregation(function (Aggregation $aggregation) {
@@ -213,7 +219,7 @@ ElasticDsl::search()->aggregation(function (Aggregation $aggregation) {
 })->get();
 ```
 
-## Suggestions
+### Suggestions
 >term, phrase, completion
 ```php
 ElasticDsl::suggest()->term('NAME', 'TEXT', 'FIELD')->get();
