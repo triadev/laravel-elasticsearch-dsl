@@ -29,12 +29,19 @@ class ElasticsearchDsl implements ElasticsearchDslContract
      * Search
      *
      * @param OngrSearch|null $search
+     * @param string|null $esIndex
+     * @param string|null $esType
      * @return Search
      */
-    public function search(?OngrSearch $search = null): Search
-    {
+    public function search(
+        ?OngrSearch $search = null,
+        ?string $esIndex = null,
+        ?string $esType = null
+    ): Search {
         return app()->makeWith(Search::class, [
-            'search' => $search
+            'search' => $search,
+            'esIndex' => $esIndex,
+            'esType' => $esType
         ]);
     }
     

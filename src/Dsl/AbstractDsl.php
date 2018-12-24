@@ -12,6 +12,7 @@ use Triadev\Es\Dsl\Dsl\Query\Joining;
 use Triadev\Es\Dsl\Dsl\Query\Specialized;
 use Triadev\Es\Dsl\Dsl\Query\TermLevel;
 use Triadev\Es\Dsl\Facade\ElasticDsl;
+use Triadev\Es\Dsl\Model\SearchResult;
 
 /**
  * Class AbstractDsl
@@ -159,6 +160,35 @@ abstract class AbstractDsl extends AbstractSearch
     }
     
     /**
+     * Get
+     *
+     * @return SearchResult
+     */
+    public function get() : SearchResult
+    {
+        return new SearchResult($this->getRaw());
+    }
+    
+    /**
+     * Get raw search result
+     *
+     * @return array
+     */
+    public function getRaw() : array
+    {
+        $params = [
+            'index' => $this->getEsIndex(),
+            'body' => $this->toDsl()
+        ];
+        
+        if ($this->getEsType()) {
+            $params['type'] = $this->getEsType();
+        }
+        
+        return ElasticDsl::getEsClient()->search($params);
+    }
+    
+    /**
      * Call
      *
      * @param string $name
@@ -179,7 +209,11 @@ abstract class AbstractDsl extends AbstractSearch
         ];
         
         if (in_array($name, $validFunctions)) {
-            return ElasticDsl::search($this->search)->$name();
+            return ElasticDsl::search(
+                $this->search,
+                $this->getEsIndex(),
+                $this->getEsType()
+            )->$name();
         }
         
         return null;

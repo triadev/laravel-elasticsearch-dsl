@@ -18,7 +18,7 @@ class Search extends AbstractDsl
      */
     public function termLevel() : TermLevel
     {
-        return new TermLevel($this->getCurrentSearch());
+        return new TermLevel($this->getCurrentSearch(), $this->getEsIndex(), $this->getEsType());
     }
     
     /**
@@ -28,7 +28,7 @@ class Search extends AbstractDsl
      */
     public function fulltext() : Fulltext
     {
-        return new Fulltext($this->search);
+        return new Fulltext($this->getCurrentSearch(), $this->getEsIndex(), $this->getEsType());
     }
     
     /**
@@ -38,7 +38,7 @@ class Search extends AbstractDsl
      */
     public function geo() : Geo
     {
-        return new Geo($this->search);
+        return new Geo($this->getCurrentSearch(), $this->getEsIndex(), $this->getEsType());
     }
     
     /**
@@ -48,7 +48,7 @@ class Search extends AbstractDsl
      */
     public function compound() : Compound
     {
-        return new Compound($this->search);
+        return new Compound($this->getCurrentSearch(), $this->getEsIndex(), $this->getEsType());
     }
     
     /**
@@ -58,7 +58,7 @@ class Search extends AbstractDsl
      */
     public function joining() : Joining
     {
-        return new Joining($this->search);
+        return new Joining($this->getCurrentSearch(), $this->getEsIndex(), $this->getEsType());
     }
     
     /**
@@ -68,7 +68,7 @@ class Search extends AbstractDsl
      */
     public function specialized() : Specialized
     {
-        return new Specialized($this->search);
+        return new Specialized($this->getCurrentSearch(), $this->getEsIndex(), $this->getEsType());
     }
     
     /**
@@ -78,6 +78,6 @@ class Search extends AbstractDsl
      */
     public function innerHit() : InnerHit
     {
-        return new InnerHit($this->search);
+        return new InnerHit($this->getCurrentSearch(), $this->getEsIndex(), $this->getEsType());
     }
 }
