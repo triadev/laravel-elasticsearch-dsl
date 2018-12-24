@@ -2,6 +2,7 @@
 namespace Tests\Integration\Dsl;
 
 use Tests\Integration\IntegrationTestCase;
+use Triadev\Es\Dsl\Dsl\Aggregation;
 use Triadev\Es\Dsl\Facade\ElasticDsl;
 
 class SearchTest extends IntegrationTestCase
@@ -22,6 +23,9 @@ class SearchTest extends IntegrationTestCase
                 'properties' => [
                     'test' => [
                         'type' => 'keyword'
+                    ],
+                    'counter' => [
+                        'type' => 'integer'
                     ]
                 ]
             ]
@@ -41,7 +45,8 @@ class SearchTest extends IntegrationTestCase
         ElasticDsl::getEsClient()->index($this->buildPayload([
             'id' => 1,
             'body' => [
-                'test' => 'phpunit'
+                'test' => 'phpunit',
+                'counter' => 5
             ]
         ]));
         
@@ -60,6 +65,11 @@ class SearchTest extends IntegrationTestCase
             ->esType(self::ELASTIC_TYPE)
             ->termLevel()
                 ->term('test', 'phpunit')
+            ->aggregation(function (Aggregation $aggregation) {
+                $aggregation->metric(function (Aggregation\Metric $metric) {
+                    $metric->max('MAX', 'counter');
+                });
+            })
             ->get();
         
         $this->assertIsInt($result->getTook());
@@ -75,5 +85,11 @@ class SearchTest extends IntegrationTestCase
         foreach ($result->getHits() as $hit) {
             $this->assertTrue(is_array($hit));
         }
+        
+        $this->assertEquals([
+            'MAX' => [
+                'value' => 5.0
+            ]
+        ], $result->getAggregation());
     }
 }
