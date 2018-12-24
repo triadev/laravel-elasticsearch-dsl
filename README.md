@@ -1,5 +1,3 @@
-# WORK IN PROGRESS
-
 # laravel-elasticsearch-dsl
 A service provider for laravel with a fluent elasticsearch query and aggregation dsl.
 
@@ -27,6 +25,199 @@ A service provider for laravel with a fluent elasticsearch query and aggregation
 [![Elasticsearch 6.2][icon-e62]][link-elasticsearch]
 [![Elasticsearch 6.3][icon-e63]][link-elasticsearch]
 [![Elasticsearch 6.4][icon-e64]][link-elasticsearch]
+
+## Installation
+
+### Composer
+> composer require triadev/laravel-elasticsearch-dsl
+
+### Application
+The package is registered through the package discovery of laravel and Composer.
+>https://laravel.com/docs/5.7/packages
+
+Once installed you can now publish your config file and set your correct configuration for using the package.
+```php
+php artisan vendor:publish --provider="Triadev\Es\Dsl\Provider\ServiceProvider" --tag="config"
+```
+
+This will create a file ```config/laravel-elasticsearch-dsl.php```.
+
+## Usage
+
+Dieses Paket bietet eine DSL für Elasticsearch.
+
+Jede Abfrage gibt ein Object zurück, welches das Suchergebnis beinhaltet.
+>Triadev\Es\Dsl\Model\SearchResult
+```php
+int: time needed to execute the query
+$result->took();
+
+bool
+$result->timedOut();
+
+int: number of matched documents
+$result->totalHits();
+
+Illuminate\Support\Collection: collection of searchable eloquent models
+$result->hits();
+```
+
+## Bool
+Bei jeder Abfrage, die auf Bool basiert, kann der Bool-Status verändert werden.
+>Default bool state: must
+```php
+ElasticDsl::search()->termLevel()
+    ->must()
+        ->term('FIELD', 'VALUE')
+    ->mustNot()
+        ->term('FIELD', 'VALUE')
+    ->should()
+        ->term('FIELD', 'VALUE')
+    ->filter()
+        ->term('FIELD', 'VALUE')
+})->get()
+```
+
+### Nested bool query
+Eine verschachtelte Query wird über ```bool(\Closure $closure)``` realisiert.
+```php
+ElasticDsl::search()
+    ->termLevel()
+        ->term('FIELD', 'VALUE')
+        ->bool(function (Search $search) {
+            $search->termLevel()
+                ->term('FIELD', 'VALUE')
+                ->bool(function (Search $search) {
+                    $search->fulltext()
+                        ->match('FIELD1', 'QUERY1')
+                        ->matchPhrase('FIELD2', 'QUERY2');
+                });
+            })
+        ->prefix('FIELD', 'VALUE')
+    ->get();
+
+--------------------------------------------------
+[
+    "query" => [
+        "bool" => [
+            "must" => [
+                [
+                    "term" => [
+                        "FIELD" => "VALUE"
+                    ]
+                ],
+                [
+                    "bool" => [
+                        "must" => [
+                            [...],
+                            [...]
+                        ]
+                    ]
+                ],
+                [
+                    "prefix" => [
+                        "FIELD" => [
+                            "value" => "VALUE"
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ]
+]
+```
+
+## TermLevel
+>matchAll, exists, fuzzy, ids, prefix, range, regexp, term, terms, type, wildcard
+```php
+ElasticDsl::search()->termLevel()->filter()->term('FIELD', 'VALUE')->get();
+```
+
+## Fulltext
+>match, matchPhrase, matchPhrasePrefix, multiMatch, queryString, simpleQueryString, commonTerms
+```php
+ElasticDsl::search()->fulltext()->must()->match('FIELD', 'QUERY')->get();
+```
+
+## Geo
+>geoBoundingBox, geoDistance, geoPolygon, geoShape
+```php
+ElasticDsl::search()->geo()->filter()->geoDistance('FIELD','10km', new Location(1, 2))->get();
+```
+
+## Compound
+>functionScore, constantScore, boosting, disMax
+```php
+ElasticDsl::search()->compound()->functionScore(
+    function (Search $search) {
+        $search->termLevel()->term('FIELD1', 'VALUE1');
+    },
+    function (FunctionScore $functionScore) {
+        $functionScore->simple([]);
+    }
+)->get();
+```
+
+## Joining
+>nested, hasChild, hasParent
+```php
+ElasticDsl::search()->joining()->nested('PATH', function (Search $search) {
+   $search->termLevel()->filter()->term('FIELD', 'VALUE');
+})->get();
+```
+
+## Specialized
+>moreLikeThis
+```php
+ElasticDsl::search()->specialized()->moreLikeThis('LIKE')->toDsl();
+```
+
+## InnerHit
+>nestedInnerHit, parentInnerHit
+```php
+ElasticDsl::search()->nestedInnerHit('NAME', 'PATH', function (Search $search) {
+    $search->termLevel()->term('FIELD', 'VALUE');
+})->get();
+```
+
+### Individual index and type
+To set an individual index or type per query you have two overwrite methods.
+```php
+ElasticDsl::search()
+    ->overwriteIndex('INDEX')
+    ->overwriteType('TYPE')
+    ->termLevel()
+        ->matchAll()
+    ->get();
+```
+
+## Aggregation
+> Bucketing, Metric, Pipeline
+```php
+ElasticDsl::search()->aggregation(function (Aggregation $aggregation) {
+    $aggregation->metric(function (Aggregation\Metric $metric) {
+        ...
+    });
+})->get();
+
+ElasticDsl::search()->aggregation(function (Aggregation $aggregation) {
+    $aggregation->bucketing(function (Aggregation\Bucketing $metric) {
+        ...
+    });
+})->get();
+
+ElasticDsl::search()->aggregation(function (Aggregation $aggregation) {
+    $aggregation->pipeline(function (Aggregation\Pipeline $metric) {
+        ...
+    });
+})->get();
+```
+
+## Suggestions
+>term, phrase, completion
+```php
+ElasticDsl::suggest()->term('NAME', 'TEXT', 'FIELD')->get();
+```
 
 ## Reporting Issues
 If you do find an issue, please feel free to report it with GitHub's bug tracker for this project.
