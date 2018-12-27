@@ -176,6 +176,8 @@ abstract class AbstractDsl extends AbstractSearch
      */
     public function getRaw() : array
     {
+        $startTime = $this->initMetricStartTime();
+        
         $params = [
             'index' => $this->getEsIndex(),
             'body' => $this->toDsl()
@@ -185,7 +187,13 @@ abstract class AbstractDsl extends AbstractSearch
             $params['type'] = $this->getEsType();
         }
         
-        return ElasticDsl::getEsClient()->search($params);
+        $result = ElasticDsl::getEsClient()->search($params);
+        
+        if ($startTime) {
+            $this->setHistogramMetric($startTime, 'search');
+        }
+        
+        return $result;
     }
     
     /**

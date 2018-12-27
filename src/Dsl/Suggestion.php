@@ -13,10 +13,18 @@ class Suggestion extends AbstractSearch
      */
     public function get() : array
     {
-        return ElasticDsl::getEsClient()->suggest([
+        $startTime = $this->initMetricStartTime();
+        
+        $result = ElasticDsl::getEsClient()->suggest([
             'index' => $this->getEsIndex(),
             'body' => $this->toDsl()
         ]);
+    
+        if ($startTime) {
+            $this->setHistogramMetric($startTime, 'suggest');
+        }
+    
+        return $result;
     }
     
     /**

@@ -5,6 +5,7 @@ namespace Tests;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Triadev\Es\Dsl\Provider\ServiceProvider;
 use Triadev\Es\Provider\ElasticsearchServiceProvider;
+use Triadev\PrometheusExporter\Provider\PrometheusExporterServiceProvider;
 
 abstract class TestCase extends \Orchestra\Testbench\TestCase
 {
@@ -61,7 +62,8 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
     {
         return [
             ServiceProvider::class,
-            ElasticsearchServiceProvider::class
+            ElasticsearchServiceProvider::class,
+            PrometheusExporterServiceProvider::class
         ];
     }
 }
