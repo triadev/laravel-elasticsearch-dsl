@@ -17,12 +17,7 @@ class ElasticsearchDsl implements ElasticsearchDslContract
      */
     public function getEsClient(): Client
     {
-        return $this->getElasticsearch()->getClient();
-    }
-    
-    private function getElasticsearch() : ElasticsearchContract
-    {
-        return app(ElasticsearchContract::class);
+        return app(ElasticsearchContract::class)->getClient();
     }
     
     /**

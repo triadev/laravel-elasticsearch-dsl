@@ -1,8 +1,10 @@
 <?php
 namespace Triadev\Es\Dsl\Dsl;
 
+use Illuminate\Support\Facades\Log;
 use ONGR\ElasticsearchDSL\BuilderInterface;
 use ONGR\ElasticsearchDSL\Search as OngrSearch;
+use Prometheus\Exception\MetricsRegistrationException;
 use Triadev\Es\Dsl\Dsl\Query\Compound;
 use Triadev\Es\Dsl\Dsl\Query\Fulltext;
 use Triadev\Es\Dsl\Dsl\Query\Geo;
@@ -10,6 +12,7 @@ use Triadev\Es\Dsl\Dsl\Query\InnerHit;
 use Triadev\Es\Dsl\Dsl\Query\Joining;
 use Triadev\Es\Dsl\Dsl\Query\Specialized;
 use Triadev\Es\Dsl\Dsl\Query\TermLevel;
+use Triadev\PrometheusExporter\Contract\PrometheusExporterContract;
 
 abstract class AbstractSearch
 {
@@ -45,7 +48,7 @@ abstract class AbstractSearch
      * @param string $index
      * @return AbstractDsl|Search|TermLevel|Compound|Fulltext|Geo|InnerHit|Joining|Specialized
      */
-    public function esIndex(string $index) : AbstractSearch
+    public function esIndex(string $index): AbstractSearch
     {
         $this->esIndex = $index;
         return $this;
@@ -56,7 +59,7 @@ abstract class AbstractSearch
      *
      * @return string
      */
-    public function getEsIndex() : string
+    public function getEsIndex(): string
     {
         return $this->esIndex ?: config('laravel-elasticsearch-dsl.index');
     }
@@ -67,7 +70,7 @@ abstract class AbstractSearch
      * @param string $type
      * @return AbstractDsl|Search|TermLevel|Compound|Fulltext|Geo|InnerHit|Joining|Specialized
      */
-    public function esType(string $type) : AbstractSearch
+    public function esType(string $type): AbstractSearch
     {
         $this->esType = $type;
         return $this;
@@ -78,7 +81,7 @@ abstract class AbstractSearch
      *
      * @return string|null
      */
-    public function getEsType() : ?string
+    public function getEsType(): ?string
     {
         return $this->esType;
     }
@@ -88,7 +91,7 @@ abstract class AbstractSearch
      *
      * @return OngrSearch
      */
-    protected function getCurrentSearch() : OngrSearch
+    protected function getCurrentSearch(): OngrSearch
     {
         return $this->search;
     }
@@ -98,7 +101,7 @@ abstract class AbstractSearch
      *
      * @return array
      */
-    public function toDsl() : array
+    public function toDsl(): array
     {
         return $this->search->toArray();
     }
@@ -108,7 +111,7 @@ abstract class AbstractSearch
      *
      * @return OngrSearch
      */
-    public function getSearch() : OngrSearch
+    public function getSearch(): OngrSearch
     {
         return $this->search;
     }
@@ -118,8 +121,53 @@ abstract class AbstractSearch
      *
      * @return BuilderInterface
      */
-    public function getQuery() : BuilderInterface
+    public function getQuery(): BuilderInterface
     {
         return $this->search->getQueries();
+    }
+    
+    /**
+     * Init metric start time
+     *
+     * @return float|null
+     */
+    protected function initMetricStartTime(): ?float
+    {
+        return config('laravel-elasticsearch-dsl.metrics.enabled', false) ?
+            microtime(true) :
+            null;
+    }
+    
+    /**
+     * Set histogram metric
+     *
+     * @param float $startTime
+     * @param string $handler
+     */
+    protected function setHistogramMetric(float $startTime, string $handler)
+    {
+        try {
+            $this->getPrometheusExporter()->setHistogram(
+                'query_duration_milliseconds',
+                'Get the query duration.',
+                round((microtime(true) - $startTime) * 1000.0),
+                'triadev_laravel_elasticsearch_dsl',
+                ['handler'],
+                [$handler],
+                config(
+                    sprintf(
+                        'laravel-elasticsearch-dsl.metrics.buckets.%s',
+                        $handler
+                    )
+                )
+            );
+        } catch (MetricsRegistrationException $e) {
+            Log::error('Prometheus exporter metrics registration failed.');
+        }
+    }
+    
+    private function getPrometheusExporter() : PrometheusExporterContract
+    {
+        return app(PrometheusExporterContract::class);
     }
 }

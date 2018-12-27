@@ -7,6 +7,7 @@ use Triadev\Es\Dsl\Contract\ElasticsearchDslContract;
 use Triadev\Es\Dsl\ElasticsearchDsl;
 use Triadev\Es\Dsl\Facade\ElasticDsl;
 use Triadev\Es\Provider\ElasticsearchServiceProvider;
+use Triadev\PrometheusExporter\Provider\PrometheusExporterServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
 {
@@ -43,6 +44,7 @@ class ServiceProvider extends BaseServiceProvider
     public function register()
     {
         $this->app->register(ElasticsearchServiceProvider::class);
+        $this->app->register(PrometheusExporterServiceProvider::class);
     
         AliasLoader::getInstance()->alias('ElasticDsl', ElasticDsl::class);
     }

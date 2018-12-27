@@ -53,11 +53,29 @@ class SearchTest extends IntegrationTestCase
         ElasticDsl::getEsClient()->indices()->refresh();
     }
     
+    private function buildClosureForSetHistogramArgs(string $handler) : \Closure
+    {
+        return function ($name, $help, $value, $namespace, $labelKeys, $labelValues, $buckets) use ($handler) {
+            return $name == 'query_duration_milliseconds' &&
+                $help == 'Get the query duration.' &&
+                is_numeric($value) &&
+                $namespace == 'triadev_laravel_elasticsearch_dsl' &&
+                $labelKeys == ['handler'] &&
+                $labelValues == [$handler] &&
+                is_array($buckets);
+        };
+    }
+    
     /**
      * @test
      */
     public function it_returns_an_elasticsearch_search_result_object()
     {
+        $this->mockPrometheusExporter
+            ->shouldReceive('setHistogram')
+            ->withArgs($this->buildClosureForSetHistogramArgs('search'))
+            ->times(1);
+        
         $this->createTestDocument();
         
         $result = ElasticDsl::search()

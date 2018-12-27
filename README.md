@@ -26,6 +26,12 @@ A service provider for laravel with a fluent elasticsearch query and aggregation
 [![Elasticsearch 6.3][icon-e63]][link-elasticsearch]
 [![Elasticsearch 6.4][icon-e64]][link-elasticsearch]
 
+## Main features
+
+- Query (TermLevel, Fulltext, Geo, Compound, Joining, Specialized, InnerHit)
+- Aggregation (Bucketing, Metric, Pipeline)
+- Suggestion
+
 ## Installation
 
 ### Composer
@@ -42,11 +48,28 @@ php artisan vendor:publish --provider="Triadev\Es\Dsl\Provider\ServiceProvider" 
 
 This will create a file ```config/laravel-elasticsearch-dsl.php```.
 
-## Main features
+## Configuration
+| Key | Env | Value | Default |
+|:-------------:|:-------------:|:-----:|:-----:|
+| index | LARAVEL_ELASTICSEARCH_DSL_INDEX | STRING | default_index |
+| metrics.enabled | LARAVEL_ELASTICSEARCH_DSL_METRICS | BOOL | false |
 
-- Query (TermLevel, Fulltext, Geo, Compound, Joining, Specialized, InnerHit)
-- Aggregation (Bucketing, Metric, Pipeline)
-- Suggestion
+## Metrics
+Metrics are generated with the package: [LaravelPrometheusExporter](https://github.com/triadev/LaravelPrometheusExporter)
+Detailed configuration options are documented in the readme of the package.
+
+The following metrics are generated as long as ```metrics.enabled = true```:
+
+>Namespace: triadev_laravel_elasticsearch_dsl
+
+### Histogram
+>Name: query_duration_milliseconds
+
+#### Handler
+* search
+>execution time of search query
+* suggest
+>execution time of suggestion query
 
 ## Usage
 
