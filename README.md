@@ -63,13 +63,10 @@ The following metrics are generated as long as ```metrics.enabled = true```:
 >Namespace: triadev_laravel_elasticsearch_dsl
 
 ### Histogram
->Name: query_duration_milliseconds
-
-#### Handler
-* search
->execution time of search query
-* suggest
->execution time of suggestion query
+| Name | Handler | Description |
+|:-------------:|:-------------:|:---:|
+| query_duration_milliseconds | search | execution time of search query |
+| query_duration_milliseconds | suggest | execution time of suggestion query |
 
 ## Usage
 
