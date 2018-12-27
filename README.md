@@ -53,6 +53,8 @@ This will create a file ```config/laravel-elasticsearch-dsl.php```.
 |:-------------:|:-------------:|:-----:|:-----:|
 | index | LARAVEL_ELASTICSEARCH_DSL_INDEX | STRING | default_index |
 | metrics.enabled | LARAVEL_ELASTICSEARCH_DSL_METRICS | BOOL | false |
+| metrics.buckets.search | --- | ARRAY | array of buckets in milliseconds |
+| metrics.buckets.suggest | --- | ARRAY | array of buckets in milliseconds |
 
 ## Metrics
 Metrics are generated with the package: [LaravelPrometheusExporter](https://github.com/triadev/LaravelPrometheusExporter)
@@ -64,7 +66,7 @@ The following metrics are generated as long as ```metrics.enabled = true```:
 
 ### Histogram
 | Name | Handler | Description |
-|:-------------:|:-------------:|:---:|
+|:-------------:|:-------------:|:---:| 
 | query_duration_milliseconds | search | execution time of search query |
 | query_duration_milliseconds | suggest | execution time of suggestion query |
 
