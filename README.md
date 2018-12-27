@@ -50,9 +50,10 @@ This will create a file ```config/laravel-elasticsearch-dsl.php```.
 
 ## Usage
 
-Dieses Paket bietet eine DSL für Elasticsearch.
+Dieses Paket bietet eine DSL für Elasticsearch. Als Einstiegspunkt für jede Query/Aggregation steht eine Facade zur Verfügung.
+>Triadev\Es\Dsl\Facade\ElasticDsl;
 
-Jede Abfrage gibt ein Object zurück, welches das Suchergebnis beinhaltet.
+Jede Query/Aggregation gibt ein Object zurück, welches das Suchergebnis und Aggregation beinhaltet.
 >Triadev\Es\Dsl\Model\SearchResult
 ```php
 int: time needed to execute the query
@@ -61,11 +62,17 @@ $result->took();
 bool
 $result->timedOut();
 
+float
+$result->maxScore();
+
 int: number of matched documents
 $result->totalHits();
 
 Illuminate\Support\Collection: collection of searchable eloquent models
 $result->hits();
+
+array|null
+$result->aggregation();
 ```
 
 ### Bool
@@ -253,7 +260,7 @@ The code for laravel-elasticsearch-dsl is distributed under the terms of the MIT
 [ico-license]: https://img.shields.io/github/license/triadev/laravel-elasticsearch-dsl.svg?style=flat-square
 [ico-version-stable]: https://img.shields.io/packagist/v/triadev/laravel-elasticsearch-dsl.svg?style=flat-square
 [ico-version-dev]: https://img.shields.io/packagist/vpre/triadev/laravel-elasticsearch-dsl.svg?style=flat-square
-[ico-downloads-monthly]: https://img.shields.io/packagist/dm/laravel-elasticsearch-dsl/laravel-elasticsearch-dsl.svg?style=flat-square
+[ico-downloads-monthly]: https://img.shields.io/packagist/dm/triadev/laravel-elasticsearch-dsl.svg?style=flat-square
 [ico-travis]: https://travis-ci.org/triadev/laravel-elasticsearch-dsl.svg?branch=master
 
 [link-packagist]: https://packagist.org/packages/triadev/laravel-elasticsearch-dsl
