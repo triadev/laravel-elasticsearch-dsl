@@ -58,6 +58,7 @@ This will create a file ```config/laravel-elasticsearch-dsl.php```.
 
 ## Metrics
 Metrics are generated with the package: [LaravelPrometheusExporter](https://github.com/triadev/LaravelPrometheusExporter)
+<br />
 Detailed configuration options are documented in the readme of the package.
 
 The following metrics are generated as long as ```metrics.enabled = true```:
@@ -72,10 +73,10 @@ The following metrics are generated as long as ```metrics.enabled = true```:
 
 ## Usage
 
-Dieses Paket bietet eine DSL für Elasticsearch. Als Einstiegspunkt für jede Query/Aggregation steht eine Facade zur Verfügung.
+This package offers a dsl for elasticsearch. The entry point for each query / aggregation is a facade.
 >Triadev\Es\Dsl\Facade\ElasticDsl;
 
-Jede Query/Aggregation gibt ein Object zurück, welches das Suchergebnis und Aggregation beinhaltet.
+Each query / aggregation returns an object containing the search result and aggregation.
 >Triadev\Es\Dsl\Model\SearchResult
 ```php
 int: time needed to execute the query
@@ -98,7 +99,7 @@ $result->aggregation();
 ```
 
 ### Bool
-Bei jeder Abfrage, die auf Bool basiert, kann der Bool-Status verändert werden.
+For every query that is based on bool, the bool status can be changed.
 >Default bool state: must
 ```php
 ElasticDsl::search()->termLevel()
@@ -114,7 +115,7 @@ ElasticDsl::search()->termLevel()
 ```
 
 #### Nested bool query
-Eine verschachtelte Query wird über ```bool(\Closure $closure)``` realisiert.
+A nested query is realized with ```bool(\Closure $closure)```.
 ```php
 ElasticDsl::search()
     ->termLevel()
