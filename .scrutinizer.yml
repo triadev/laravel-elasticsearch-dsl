@@ -1,17 +1,13 @@
 build:
+  services:
+      elasticsearch: 6.4.0
+
+  environment:
+    variables:
+      ELASTICSEARCH_HOSTS: http://127.0.0.1:9200
+
   nodes:
     coverage:
-      services:
-        elasticsearch: 6.4.0
-
-      environment:
-        variables:
-          ELASTICSEARCH_HOSTS: http://127.0.0.1:9200
-
-      cache:
-        directories:
-          - vendor/
-
       tests:
         stop_on_failure: true
 
